@@ -1,0 +1,15 @@
+{
+	"name": "azureetladfresourceadf",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f8a2433f-094b-4bdb-be9c-2efe6df42e5e",
+		"tenantId": "12ae514e-8132-4945-bdd7-581686e3ba16"
+	}
+}
