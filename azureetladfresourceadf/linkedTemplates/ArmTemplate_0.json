@@ -1,0 +1,710 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "azureetladfresourceadf"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureBlobStorage2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
+		},
+		"AzureSqlDatabase1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSqlDatabase1'"
+		},
+		"AzureTableStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureTableStorage1'"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlschoolonlineserver.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "PracticeDatabase"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqlschool"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage2_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('AzureSqlDatabase1_properties_typeProperties_server')]",
+					"database": "[parameters('AzureSqlDatabase1_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('AzureSqlDatabase1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzureSqlDatabase1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureTableStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureTableStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureTableStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_y26')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureTableStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "AzureTableForCustomersData"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureTableStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_y26')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CustomerKey",
+						"type": "int",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "GeographyKey",
+						"type": "int",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "CustomerAlternateKey",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "Title",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "FirstName",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "MiddleName",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "LastName",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "NameStyle",
+						"type": "bit",
+						"precision": 1,
+						"scale": 0
+					},
+					{
+						"name": "BirthDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "MaritalStatus",
+						"type": "nchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "Suffix",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "Gender",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "EmailAddress",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "YearlyIncome",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "TotalChildren",
+						"type": "tinyint",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "NumberChildrenAtHome",
+						"type": "tinyint",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "EnglishEducation",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "SpanishEducation",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "FrenchEducation",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "EnglishOccupation",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "SpanishOccupation",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "FrenchOccupation",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "HouseOwnerFlag",
+						"type": "nchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "NumberCarsOwned",
+						"type": "tinyint",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "AddressLine1",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "AddressLine2",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "Phone",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "DateFirstPurchase",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CommuteDistance",
+						"type": "nvarchar",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "ROW_MODIFIED_DATE",
+						"type": "date",
+						"precision": 10,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "CUSTOMERS_DATA"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ADFPipelineForAzTables')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_y26",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "dbo.CUSTOMERS_DATA"
+							},
+							{
+								"name": "Destination",
+								"value": "AzureTableForCustomersData"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureTableSink",
+								"azureTableInsertType": "merge",
+								"writeBatchSize": 10000
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false,
+							"dataIntegrationUnits": 16,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "CustomerKey",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "PartitionKey"
+										}
+									},
+									{
+										"source": {
+											"name": "Title",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "RowKey"
+										}
+									},
+									{
+										"source": {
+											"name": "FirstName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "FirstName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "MiddleName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "MiddleName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "LastName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "LastName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "NameStyle",
+											"type": "Boolean",
+											"physicalType": "bit"
+										},
+										"sink": {
+											"name": "NameStyle",
+											"type": "Boolean"
+										}
+									},
+									{
+										"source": {
+											"name": "BirthDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "BirthDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "MaritalStatus",
+											"type": "String",
+											"physicalType": "nchar"
+										},
+										"sink": {
+											"name": "MaritalStatus",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Suffix",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Suffix",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Gender",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Gender",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EmailAddress",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "EmailAddress",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "YearlyIncome",
+											"type": "Decimal",
+											"physicalType": "money"
+										},
+										"sink": {
+											"name": "YearlyIncome",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "TotalChildren",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "TotalChildren",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "NumberChildrenAtHome",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "NumberChildrenAtHome",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EnglishEducation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "EnglishEducation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "SpanishEducation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "SpanishEducation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "FrenchEducation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "FrenchEducation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EnglishOccupation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "EnglishOccupation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "SpanishOccupation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "SpanishOccupation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "FrenchOccupation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "FrenchOccupation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "HouseOwnerFlag",
+											"type": "String",
+											"physicalType": "nchar"
+										},
+										"sink": {
+											"name": "HouseOwnerFlag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "NumberCarsOwned",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "NumberCarsOwned",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "AddressLine1",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "AddressLine1",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "AddressLine2",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "AddressLine2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Phone",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Phone",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "DateFirstPurchase",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "DateFirstPurchase",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "CommuteDistance",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "CommuteDistance",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ROW_MODIFIED_DATE",
+											"type": "DateTime",
+											"physicalType": "date"
+										},
+										"sink": {
+											"name": "ROW_MODIFIED_DATE",
+											"type": "DateTime"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_y26",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_y26",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_y26')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_y26')]"
+			]
+		}
+	]
+}
